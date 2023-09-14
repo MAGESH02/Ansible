@@ -1,0 +1,14 @@
+---
+- name: Get current target host's IP address using Python
+  hosts: localhost
+  connection: local
+  gather_facts: no  
+
+  tasks:
+    - name: Fetch IP address using Python
+      shell: "{{ ansible_playbook_python }} -c 'import socket; print(socket.gethostbyname(socket.gethostname()))'"
+      register: ip_address_result
+
+    - name: Display the IP address
+      debug:
+        var: ip_address_result.stdout
