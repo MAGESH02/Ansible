@@ -6,7 +6,7 @@
   tasks:
     - name: Get CPU utilization
       command: |
-        mpstat
+        wmic cpu get loadpercentage
       register: cpu_utilization
 
     - name: Display CPU utilization
