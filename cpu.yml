@@ -1,0 +1,14 @@
+---
+- name: Get Windows Server CPU Utilization
+  hosts: localhost
+  gather_facts: no  # No need to gather facts for this example
+
+  tasks:
+    - name: Get CPU utilization
+      win_shell: |
+        Get-Counter -Counter "\Processor(_Total)\% Processor Time" -SampleInterval 1 -MaxSamples 1 | Select-Object -ExpandProperty CounterSamples | Select-Object -ExpandProperty CookedValue
+      register: cpu_utilization
+
+    - name: Display CPU utilization
+      debug:
+        var: cpu_utilization.stdout_lines[0]
