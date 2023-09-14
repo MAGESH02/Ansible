@@ -4,4 +4,4 @@
 
 tasks:
   - name: To start httpd service
-    service: name = httpd enabled: True state: started
+    service: name=httpd enabled=True state=started
