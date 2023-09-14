@@ -1,0 +1,7 @@
+---
+ - name: To start httpd service
+   hosts: localhost
+
+tasks:
+  - name: To start httpd service
+    service: name = httpd enabled: True state: started
