@@ -1,0 +1,9 @@
+---
+- name: Stopping the WMI service
+  hosts: all
+
+  tasks:
+    - name: Stop the WMI service
+      win_service:
+        name: winmgmt
+        state: stopped
