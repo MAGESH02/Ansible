@@ -1,0 +1,9 @@
+---
+- name: Delete windows logs
+  hosts: all
+  gather_facts: yes
+  tasks:
+  - name: Delete windows event logs
+    win_eventlog:
+     name: Google chrome
+     state: absent
