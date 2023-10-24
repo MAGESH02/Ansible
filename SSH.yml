@@ -1,0 +1,39 @@
+---
+- name: Distributing SSH key to the users
+  hosts: all
+  gather_facts: yes
+  become: true
+  tasks:
+    - name: Create group 'web'
+      group:
+        name: web
+        state: present
+
+    - name: Create user 'web'
+      user:
+        name: web
+        comment: "Web User"
+        group: web
+        shell: /bin/bash
+        home: /home/web
+        password: "{{ lookup('pipe', 'date +%Y%m%d-%H%M')|password_hash('sha512') }}"
+        update_password: on_create
+        state: present
+    - name: Add the user 'web' appending the group 'nginx' and 'web'
+      user:
+        name: web    
+        groups: nginx,web
+        append: yes    
+    - name: Create a 2048-bit SSH key for user 'web' in ~/.ssh/id_rsa
+      user:
+        name: web       
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: .ssh/id_rsa
+
+    - name: Slurp ssh key file for user 'web'
+      slurp:
+        src: /home/web/.ssh/id_rsa.pub
+      register: sshpubkey_slurpfile
+    - name: Copy public ssh key to authorized_key to loopback connection
+      authorized_key: user=web key="{{ sshpubkey_slurpfile['content'] | b64decode }}" 
