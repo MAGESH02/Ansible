@@ -1,0 +1,14 @@
+---
+- name: Windows patch update
+  hosts: all
+  gather facts: yes
+  become: true
+  tasks:
+    - name: To update the patch for windows server
+      ansible.windows.win_updates:
+        category_names:
+          - CritcalUpdates
+          - SecurityUpdates
+        state: installed
+        reboot: true
+        log_path: C:\windows_patch.txt
