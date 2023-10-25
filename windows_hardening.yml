@@ -1,0 +1,67 @@
+---
+- name: Basic Windows Server Hardening
+  hosts: windows_servers
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: Disable Guest Account
+      win_user:
+        name: Guest
+        state: disabled
+
+    - name: Change Administrator Password
+      win_user:
+        name: Administrator
+        password: "new_password"
+      when: ansible_distribution_version | version_compare("10.0", "<")
+
+
+    - name: Enable Windows Firewall
+      win_firewall_profile:
+        profile: all
+        state: on
+
+    - name: Configure Windows Firewall Rules
+      win_firewall_rule:
+        name: Allow SSH
+        description: Allow SSH traffic
+        direction: in
+        protocol: tcp
+        localport: 22
+        state: enabled
+        action: allow
+      when: ansible_distribution_version | version_compare("10.0", ">=")
+
+    - name: Disable SMBv1
+      win_command: Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol
+      args:
+        warn: no
+
+    - name: Set Strong Password Policies
+      win_security_policy:
+        policy_type: "password"
+        policy_name: "PasswordComplexity"
+        state: "enabled"
+
+    - name: Enable Windows Updates
+      win_updates:
+        category_names:
+          - CriticalUpdates
+          - SecurityUpdates
+        state: installed
+
+    - name: Enable Windows Defender
+      win_feature:
+        name: "Windows-Defender"
+
+    - name: Install Anti-virus Software
+      win_chocolatey:
+        name: "Avast"
+        state: present
+      when: ansible_distribution_version | version_compare("10.0", ">=")
+
+    - name: Restrict PowerShell Execution Policy
+      win_command: Set-ExecutionPolicy RemoteSigned
+      args:
+        warn: no
