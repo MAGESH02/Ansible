@@ -1,0 +1,13 @@
+---
+- name: Updating Group policy
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Extracting zip file
+      win_unzip:
+        src: E:\GroupPolicy\example.zip
+        dest: C:\Windows\System32\GroupPolicy
+
+    - name: Updating GroupPolicies
+      win_shell: gpupdate /force
