@@ -1,11 +1,6 @@
 ---
-- hosts: all
+- hosts: localhost
   become: true
-  vars:
-    container_count: 4
-    default_container_name: docker
-    default_container_image: ubuntu
-    default_container_command: sleep 1d
 
   tasks:
     - name: Install aptitude
@@ -49,13 +44,18 @@
 
     - name: Pull default Docker image
       community.docker.docker_image:
-        name: "tomcat"
+        name: "tomcat:latest"
         source: pull
 
     - name: Create default containers
       community.docker.docker_container:
-        name: "web_server"
-        image: "tomcat"
-        command: "docker run tomcat -n web-server -p 8080:7070"
+        name: "web_server4"
+        image: "tomcat:latest"
+        command: "sudo docker run --name web_server4 -p 8080:7070 tomcat:latest"
         state: present
-      with_sequence: count=1
+
+    - name: Start the container
+      docker_container:
+        name: webserver4
+        image: tomcat:latest
+        state: started
